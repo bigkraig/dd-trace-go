@@ -429,8 +429,12 @@ func (t *tracer) StartSpan(operationName string, options ...ddtrace.StartSpanOpt
 		// all top level spans are measured. So the measured tag is redundant.
 		delete(span.Metrics, keyMeasured)
 	}
-	if t.config.version != "" && span.Service == t.config.serviceName {
-		span.setMeta(ext.Version, t.config.version)
+	if t.config.version != "" {
+		if span.Service == t.config.serviceName {
+			span.setMeta(ext.Version, t.config.version)
+		} else {
+			span.setMeta(ext.ParentVersion, t.config.version)
+		}
 	}
 	if t.config.env != "" {
 		span.setMeta(ext.Environment, t.config.env)
